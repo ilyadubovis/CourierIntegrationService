@@ -5,17 +5,17 @@ using PackageTrackingInfoRetriever.Models;
 using System.Net.Http.Json;
 using System.Text.Json;
 
-namespace PackageTrackingInfoRetriever.Services;
+namespace PackageTrackingInfoRetriever.Services.TrackingService;
 
-abstract public class PushTrackingInfoService
-{ 
+abstract public class TrackingInfoService
+{
     protected readonly IHttpClientFactory _httpClientFactory;
 
     protected readonly IOptions<CourierIntegrationServiceOptions> _options;
 
     private Token? _authenticationToken;
 
-    public PushTrackingInfoService(IHttpClientFactory httpClientFactory, IOptions<CourierIntegrationServiceOptions> options)
+    public TrackingInfoService(IHttpClientFactory httpClientFactory, IOptions<CourierIntegrationServiceOptions> options)
     {
         _httpClientFactory = httpClientFactory;
         _options = options;

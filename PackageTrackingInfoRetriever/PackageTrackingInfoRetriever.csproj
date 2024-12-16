@@ -11,4 +11,10 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="TIBCO.EMS">
+      <HintPath>..\TIBCO\TIBCO.EMS.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

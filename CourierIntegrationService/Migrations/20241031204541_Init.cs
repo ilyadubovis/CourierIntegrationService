@@ -29,6 +29,19 @@ namespace CourierIntegrationService.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Classification",
+                columns: table => new
+                {
+                    ClassificationId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ClassificationName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Classification", x => x.ClassificationId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ShipmentStatus",
                 columns: table => new
                 {
@@ -87,12 +100,21 @@ namespace CourierIntegrationService.Migrations
                     TrackingNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CourierName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ShipmentStatusId = table.Column<int>(type: "int", nullable: false),
+                    ClassificationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ClassificationIdId = table.Column<int>(type: "int", nullable: true),
                     ShipperId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ReceiverId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    ReceiverId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EstimatedDeliveryDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Shipments", x => x.ShipmentId);
+                    table.ForeignKey(
+                        name: "FK_Shipments_Classification_ClassificationIdId",
+                        column: x => x.ClassificationIdId,
+                        principalTable: "Classification",
+                        principalColumn: "ClassificationId",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Shipments_Receiver_ReceiverId",
                         column: x => x.ReceiverId,
@@ -142,10 +164,13 @@ namespace CourierIntegrationService.Migrations
                 values: new object[,]
                 {
                     { 1, "Unknown" },
-                    { 2, "PreTransit" },
-                    { 3, "Transit" },
-                    { 4, "Delivered" },
-                    { 5, "Failure" }
+                    { 2, "LabelCreated" },
+                    { 3, "OutForDelivery" },
+                    { 4, "Shipped" },
+                    { 5, "AtLocalFacility" },
+                    { 6, "Delivered" },
+                    { 7, "Delayed" },
+                    { 8, "Cancelled" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -157,6 +182,11 @@ namespace CourierIntegrationService.Migrations
                 name: "IX_Receiver_AddressId",
                 table: "Receiver",
                 column: "AddressId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Shipments_ClassificationIdId",
+                table: "Shipments",
+                column: "ClassificationIdId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Shipments_ReceiverId",
@@ -187,6 +217,9 @@ namespace CourierIntegrationService.Migrations
 
             migrationBuilder.DropTable(
                 name: "Shipments");
+
+            migrationBuilder.DropTable(
+                name: "Classification");
 
             migrationBuilder.DropTable(
                 name: "Receiver");

@@ -14,9 +14,12 @@ public class ShipmentStatus
 public enum ShipmentStatusEnum
 {
     Unknown = 1,
-    PreTransit = 2,
-    Transit = 3,
-    Delivered = 4,
-    Failure = 5
+    LabelCreated = 2,
+    OutForDelivery = 3,
+    Shipped = 4,
+    AtLocalFacility = 5,
+    Delivered = 6,
+    Delayed = 7,
+    Cancelled = 8
 }
 

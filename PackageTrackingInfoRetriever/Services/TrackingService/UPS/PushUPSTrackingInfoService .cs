@@ -2,9 +2,9 @@
 using PackageTrackingInfoRetriever.Models;
 using System.Net.Http.Json;
 
-namespace PackageTrackingInfoRetriever.Services;
+namespace PackageTrackingInfoRetriever.Services.TrackingService.UPS;
 
-public class PushUPSTrackingInfoService : PushTrackingInfoService
+public class PushUPSTrackingInfoService : TrackingInfoService
 {
     public PushUPSTrackingInfoService(IHttpClientFactory httpClientFactory, IOptions<CourierIntegrationServiceOptions> options) : base(httpClientFactory, options)
     {

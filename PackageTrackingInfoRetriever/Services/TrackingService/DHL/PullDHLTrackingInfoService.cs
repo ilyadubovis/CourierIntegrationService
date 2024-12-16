@@ -1,14 +1,11 @@
-﻿
-using Microsoft.Extensions.Options;
-using PackageTrackingInfoRetriever.Models;
-using System.Net.Http;
+﻿using PackageTrackingInfoRetriever.Models;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 
-namespace PackageTrackingInfoRetriever.Services.DHL;
+namespace PackageTrackingInfoRetriever.Services.TrackingService.DHL;
 
-public class PullDHLTrackingInfoService(IHttpClientFactory httpClientFactory, IOptions<CourierAPIOptions> options)
+public class PullDHLTrackingInfoService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
 {
     private Token? _authenticationToken;
 
@@ -30,10 +27,11 @@ public class PullDHLTrackingInfoService(IHttpClientFactory httpClientFactory, IO
         return Convert.ToBase64String(Encoding.ASCII.GetBytes(courierConfig.Username + ":" + courierConfig.Password));
     }
 
-    private CourierAPIInfo? GetCourierAPIInfo()
+    private CourierAPIOptions? GetCourierAPIInfo()
     {
         var courierName = Enum.GetName(typeof(CourierEnum), CourierEnum.DHL);
-        return options.Value.CourierApiInfos.SingleOrDefault(x => x.Name.Equals(courierName, StringComparison.InvariantCultureIgnoreCase));
+        var courierApiInfos = configuration.GetSection("CourierAPIOptions").Get<CourierAPIOptions[]>();
+        return courierApiInfos?.SingleOrDefault(x => x.Name.Equals(courierName, StringComparison.InvariantCultureIgnoreCase));
     }
 
 }

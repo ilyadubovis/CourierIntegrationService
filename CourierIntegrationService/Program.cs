@@ -2,6 +2,7 @@ using CourierIntegrationService.Data;
 using CourierIntegrationService.Repositories;
 using CourierIntegrationService.Services.Authentication;
 using CourierIntegrationService.Services.Mappers;
+using CourierIntegrationService.Services.TibcoEMC;
 using CourierIntegrationService.Services.Tracking;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<AuthenticationOptions>(builder.Configuration.GetSection("Authentication"));
+builder.Services.Configure<TibcoEMCOptions>(builder.Configuration.GetSection("Tibco.EMC"));
 
 // Add services to the container.
 
@@ -42,6 +44,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ITrackingRepository, TrackingRepository>();
 builder.Services.AddScoped<ITrackingService, TrackingService>();
+builder.Services.AddScoped<ITibcoEMCService, TibcoEMCService>();
 
 builder.Services.AddSingleton<DHLTrackingInfoMapper>();
 builder.Services.AddSingleton<UPSTrackingInfoMapper>();

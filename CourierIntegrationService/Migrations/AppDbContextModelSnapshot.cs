@@ -22,7 +22,7 @@ namespace CourierIntegrationService.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CourierIntegrationService.Models.Tracking.Address", b =>
+            modelBuilder.Entity("CourierIntegrationService.Models.Address", b =>
                 {
                     b.Property<Guid>("AddressId")
                         .ValueGeneratedOnAdd()
@@ -53,7 +53,24 @@ namespace CourierIntegrationService.Migrations
                     b.ToTable("Address");
                 });
 
-            modelBuilder.Entity("CourierIntegrationService.Models.Tracking.Event", b =>
+            modelBuilder.Entity("CourierIntegrationService.Models.Classification", b =>
+                {
+                    b.Property<int>("ClassificationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClassificationId"));
+
+                    b.Property<string>("ClassificationName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ClassificationId");
+
+                    b.ToTable("Classification");
+                });
+
+            modelBuilder.Entity("CourierIntegrationService.Models.Event", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,7 +105,7 @@ namespace CourierIntegrationService.Migrations
                     b.ToTable("Event");
                 });
 
-            modelBuilder.Entity("CourierIntegrationService.Models.Tracking.Receiver", b =>
+            modelBuilder.Entity("CourierIntegrationService.Models.Receiver", b =>
                 {
                     b.Property<Guid>("ReceiverId")
                         .ValueGeneratedOnAdd()
@@ -108,15 +125,24 @@ namespace CourierIntegrationService.Migrations
                     b.ToTable("Receiver");
                 });
 
-            modelBuilder.Entity("CourierIntegrationService.Models.Tracking.Shipment", b =>
+            modelBuilder.Entity("CourierIntegrationService.Models.Shipment", b =>
                 {
                     b.Property<Guid>("ShipmentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("ClassificationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("ClassificationIdId")
+                        .HasColumnType("int");
+
                     b.Property<string>("CourierName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EstimatedDeliveryDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid>("ReceiverId")
                         .HasColumnType("uniqueidentifier");
@@ -133,6 +159,8 @@ namespace CourierIntegrationService.Migrations
 
                     b.HasKey("ShipmentId");
 
+                    b.HasIndex("ClassificationIdId");
+
                     b.HasIndex("ReceiverId");
 
                     b.HasIndex("ShipmentStatusId");
@@ -142,7 +170,7 @@ namespace CourierIntegrationService.Migrations
                     b.ToTable("Shipments");
                 });
 
-            modelBuilder.Entity("CourierIntegrationService.Models.Tracking.ShipmentStatus", b =>
+            modelBuilder.Entity("CourierIntegrationService.Models.ShipmentStatus", b =>
                 {
                     b.Property<int>("ShipmentStatusId")
                         .ValueGeneratedOnAdd()
@@ -167,26 +195,41 @@ namespace CourierIntegrationService.Migrations
                         new
                         {
                             ShipmentStatusId = 2,
-                            ShipmentStatusName = "PreTransit"
+                            ShipmentStatusName = "LabelCreated"
                         },
                         new
                         {
                             ShipmentStatusId = 3,
-                            ShipmentStatusName = "Transit"
+                            ShipmentStatusName = "OutForDelivery"
                         },
                         new
                         {
                             ShipmentStatusId = 4,
-                            ShipmentStatusName = "Delivered"
+                            ShipmentStatusName = "Shipped"
                         },
                         new
                         {
                             ShipmentStatusId = 5,
-                            ShipmentStatusName = "Failure"
+                            ShipmentStatusName = "AtLocalFacility"
+                        },
+                        new
+                        {
+                            ShipmentStatusId = 6,
+                            ShipmentStatusName = "Delivered"
+                        },
+                        new
+                        {
+                            ShipmentStatusId = 7,
+                            ShipmentStatusName = "Delayed"
+                        },
+                        new
+                        {
+                            ShipmentStatusId = 8,
+                            ShipmentStatusName = "Cancelled"
                         });
                 });
 
-            modelBuilder.Entity("CourierIntegrationService.Models.Tracking.Shipper", b =>
+            modelBuilder.Entity("CourierIntegrationService.Models.Shipper", b =>
                 {
                     b.Property<Guid>("ShipperId")
                         .ValueGeneratedOnAdd()
@@ -206,9 +249,9 @@ namespace CourierIntegrationService.Migrations
                     b.ToTable("Shipper");
                 });
 
-            modelBuilder.Entity("CourierIntegrationService.Models.Tracking.Event", b =>
+            modelBuilder.Entity("CourierIntegrationService.Models.Event", b =>
                 {
-                    b.HasOne("CourierIntegrationService.Models.Tracking.Shipment", "Shipment")
+                    b.HasOne("CourierIntegrationService.Models.Shipment", "Shipment")
                         .WithMany("Events")
                         .HasForeignKey("ShipmentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -217,9 +260,9 @@ namespace CourierIntegrationService.Migrations
                     b.Navigation("Shipment");
                 });
 
-            modelBuilder.Entity("CourierIntegrationService.Models.Tracking.Receiver", b =>
+            modelBuilder.Entity("CourierIntegrationService.Models.Receiver", b =>
                 {
-                    b.HasOne("CourierIntegrationService.Models.Tracking.Address", "Address")
+                    b.HasOne("CourierIntegrationService.Models.Address", "Address")
                         .WithMany()
                         .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -228,25 +271,32 @@ namespace CourierIntegrationService.Migrations
                     b.Navigation("Address");
                 });
 
-            modelBuilder.Entity("CourierIntegrationService.Models.Tracking.Shipment", b =>
+            modelBuilder.Entity("CourierIntegrationService.Models.Shipment", b =>
                 {
-                    b.HasOne("CourierIntegrationService.Models.Tracking.Receiver", "Receiver")
+                    b.HasOne("CourierIntegrationService.Models.Classification", "Classification")
+                        .WithMany()
+                        .HasForeignKey("ClassificationIdId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("CourierIntegrationService.Models.Receiver", "Receiver")
                         .WithMany()
                         .HasForeignKey("ReceiverId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("CourierIntegrationService.Models.Tracking.ShipmentStatus", "ShipmentStatus")
+                    b.HasOne("CourierIntegrationService.Models.ShipmentStatus", "ShipmentStatus")
                         .WithMany()
                         .HasForeignKey("ShipmentStatusId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("CourierIntegrationService.Models.Tracking.Shipper", "Shipper")
+                    b.HasOne("CourierIntegrationService.Models.Shipper", "Shipper")
                         .WithMany()
                         .HasForeignKey("ShipperId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Classification");
 
                     b.Navigation("Receiver");
 
@@ -255,9 +305,9 @@ namespace CourierIntegrationService.Migrations
                     b.Navigation("Shipper");
                 });
 
-            modelBuilder.Entity("CourierIntegrationService.Models.Tracking.Shipper", b =>
+            modelBuilder.Entity("CourierIntegrationService.Models.Shipper", b =>
                 {
-                    b.HasOne("CourierIntegrationService.Models.Tracking.Address", "Address")
+                    b.HasOne("CourierIntegrationService.Models.Address", "Address")
                         .WithMany()
                         .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -266,7 +316,7 @@ namespace CourierIntegrationService.Migrations
                     b.Navigation("Address");
                 });
 
-            modelBuilder.Entity("CourierIntegrationService.Models.Tracking.Shipment", b =>
+            modelBuilder.Entity("CourierIntegrationService.Models.Shipment", b =>
                 {
                     b.Navigation("Events");
                 });

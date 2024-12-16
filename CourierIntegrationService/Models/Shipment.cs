@@ -23,6 +23,13 @@ namespace CourierIntegrationService.Models
         public ShipmentStatus? ShipmentStatus { get; set; }
 
         [Required]
+        public Guid ClassificationId { get; set; }
+
+        [ForeignKey("ClassificationIdId")]
+        [DeleteBehavior(DeleteBehavior.Restrict)]
+        public Classification? Classification { get; set; }
+
+        [Required]
         public Guid ShipperId { get; set; }
 
         [ForeignKey("ShipperId")]
@@ -35,6 +42,9 @@ namespace CourierIntegrationService.Models
         [ForeignKey("ReceiverId")]
         [DeleteBehavior(DeleteBehavior.Restrict)]
         public Receiver? Receiver { get; set; }
+
+        [Required]
+        public DateTime EstimatedDeliveryDate { get; set; }
 
         public ICollection<Event> Events { get; set; } = [];
     }

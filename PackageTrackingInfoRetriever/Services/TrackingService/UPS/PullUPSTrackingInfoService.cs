@@ -1,4 +1,4 @@
-﻿
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using PackageTrackingInfoRetriever.Authentication;
 using PackageTrackingInfoRetriever.Models;
@@ -6,9 +6,9 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 
-namespace PackageTrackingInfoRetriever.Services.UPS;
+namespace PackageTrackingInfoRetriever.Services.TrackingService.UPS;
 
-public class PullUPSTrackingInfoService(IHttpClientFactory httpClientFactory, IOptions<CourierAPIOptions> options)
+public class PullUPSTrackingInfoService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
 {
     private Token? _authenticationToken;
 
@@ -58,9 +58,10 @@ public class PullUPSTrackingInfoService(IHttpClientFactory httpClientFactory, IO
         return Convert.ToBase64String(Encoding.ASCII.GetBytes(courierConfig.Username + ":" + courierConfig.Password));
     }
 
-    private CourierAPIInfo? GetCourierAPIInfo()
+    private CourierAPIOptions? GetCourierAPIInfo()
     {
-        var courierName = Enum.GetName(typeof(CourierEnum), CourierEnum.UPS);
-        return options.Value.CourierApiInfos.SingleOrDefault(x => x.Name.Equals(courierName, StringComparison.InvariantCultureIgnoreCase));
+        var courierName = Enum.GetName(typeof(CourierEnum), CourierEnum.DHL);
+        var courierApiInfos = configuration.GetSection("CourierAPI").Get<CourierAPIOptions[]>();
+        return courierApiInfos?.SingleOrDefault(x => x.Name.Equals(courierName, StringComparison.InvariantCultureIgnoreCase));
     }
 }

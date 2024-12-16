@@ -1,18 +1,17 @@
 using Microsoft.Extensions.Options;
 using PackageTrackingInfoRetriever.Models;
-using PackageTrackingInfoRetriever.Services.DHL;
-using PackageTrackingInfoRetriever.Services.UPS;
-using PackageTrackingInfoRetriever.Services;
+using PackageTrackingInfoRetriever.Services.TrackingService.DHL;
+using PackageTrackingInfoRetriever.Services.TrackingService.UPS;
 
 namespace PackageTrackingInfoRetriever;
 
-public class Worker(
+public class TrackingWorker(
     PullDHLTrackingInfoService pullDHLTrackingInfoService,
     PullUPSTrackingInfoService pullUPSTrackingInfoService,
     PushDHLTrackingInfoService pushDHLTrackingInfoService,
     PushUPSTrackingInfoService pushUPSTrackingInfoService,
     IOptions<WorkerOptions> options,
-    ILogger<Worker> logger) : BackgroundService
+    ILogger<TrackingWorker> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {

@@ -2,9 +2,9 @@
 using PackageTrackingInfoRetriever.Models;
 using System.Net.Http.Json;
 
-namespace PackageTrackingInfoRetriever.Services;
+namespace PackageTrackingInfoRetriever.Services.TrackingService.DHL;
 
-public class PushDHLTrackingInfoService : PushTrackingInfoService
+public class PushDHLTrackingInfoService : TrackingInfoService
 {
     public PushDHLTrackingInfoService(IHttpClientFactory httpClientFactory, IOptions<CourierIntegrationServiceOptions> options) : base(httpClientFactory, options)
     {
